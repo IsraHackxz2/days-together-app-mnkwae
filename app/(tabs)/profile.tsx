@@ -79,7 +79,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Made with ❤️ for couples everywhere</Text>
+          <Text style={styles.footerText}>Made it by Isra for Natasha</Text>
           <Text style={styles.versionText}>Version 1.0.0</Text>
         </View>
       </ScrollView>
