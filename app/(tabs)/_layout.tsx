@@ -1,51 +1,53 @@
-import React from 'react';
+
+import { Stack } from 'expo-router';
 import { Platform } from 'react-native';
 import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
-import { Stack } from 'expo-router';
+import React from 'react';
 import FloatingTabBar, { TabBarItem } from '@/components/FloatingTabBar';
+import { colors } from '@/styles/commonStyles';
 
 export default function TabLayout() {
-  // Define the tabs configuration
   const tabs: TabBarItem[] = [
     {
-      name: '(home)',
-      route: '/(tabs)/(home)/',
-      icon: 'house.fill',
+      route: '/(home)',
       label: 'Home',
+      icon: 'heart.fill',
+      color: colors.text,
     },
     {
-      name: 'profile',
-      route: '/(tabs)/profile',
-      icon: 'person.fill',
+      route: '/profile',
       label: 'Profile',
+      icon: 'person.fill',
+      color: colors.text,
     },
   ];
 
-  // Use NativeTabs for iOS, custom FloatingTabBar for Android and Web
   if (Platform.OS === 'ios') {
     return (
       <NativeTabs>
-        <NativeTabs.Trigger name="(home)">
-          <Icon sf="house.fill" drawable="ic_home" />
-          <Label>Home</Label>
-        </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="profile">
-          <Icon sf="person.fill" drawable="ic_profile" />
-          <Label>Profile</Label>
-        </NativeTabs.Trigger>
+        <NativeTabs.Screen
+          name="(home)"
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color }) => <Icon name="heart.fill" color={color} />,
+            tabBarLabel: ({ color }) => <Label color={color}>Home</Label>,
+          }}
+        />
+        <NativeTabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => <Icon name="person.fill" color={color} />,
+            tabBarLabel: ({ color }) => <Label color={color}>Profile</Label>,
+          }}
+        />
       </NativeTabs>
     );
   }
 
-  // For Android and Web, use Stack navigation with custom floating tab bar
   return (
     <>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'none', // Remove fade animation to prevent black screen flash
-        }}
-      >
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(home)" />
         <Stack.Screen name="profile" />
       </Stack>
