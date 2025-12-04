@@ -9,7 +9,8 @@ import {
   Pressable, 
   Alert,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Linking
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/styles/commonStyles";
@@ -59,7 +60,6 @@ export default function ChatScreen() {
       let name = await AsyncStorage.getItem('userName');
       
       if (!code) {
-        // Generate a unique 6-digit code
         code = Math.floor(100000 + Math.random() * 900000).toString();
         await AsyncStorage.setItem('userCode', code);
       }
@@ -183,7 +183,6 @@ export default function ChatScreen() {
     saveMessages(selectedFriend.code, updatedMessages);
     setMessageText("");
     
-    // Scroll to bottom
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 100);
@@ -232,10 +231,9 @@ export default function ChatScreen() {
             <Text style={styles.headerSubtitle}>{t.chatWithYourLoved}</Text>
           </View>
 
-          {/* My Code Card */}
           <View style={styles.codeCard}>
             <View style={styles.codeHeader}>
-              <IconSymbol name="person.circle.fill" color={colors.primary} size={32} />
+              <IconSymbol ios_icon_name="person.circle.fill" android_material_icon_name="person" color={colors.primary} size={32} />
               <View style={styles.codeInfo}>
                 <Text style={styles.codeLabel}>{t.yourCode}</Text>
                 <Text style={styles.codeText}>{myCode}</Text>
@@ -244,13 +242,68 @@ export default function ChatScreen() {
             <Text style={styles.codeDescription}>{t.shareThisCode}</Text>
           </View>
 
-          {/* Notice Card */}
-          <View style={styles.noticeCard}>
-            <IconSymbol name="info.circle.fill" color={colors.accent} size={24} />
-            <Text style={styles.noticeText}>{t.chatNotice}</Text>
+          <View style={styles.warningCard}>
+            <View style={styles.warningHeader}>
+              <IconSymbol ios_icon_name="exclamationmark.triangle.fill" android_material_icon_name="warning" color="#FF9800" size={28} />
+              <Text style={styles.warningTitle}>⚠️ Local Chat Only</Text>
+            </View>
+            <Text style={styles.warningText}>
+              This chat is currently LOCAL ONLY. Messages are stored on your device and won&apos;t sync with other devices or users in real-time.
+            </Text>
           </View>
 
-          {/* Add Friend Section */}
+          <View style={styles.infoCard}>
+            <View style={styles.infoHeader}>
+              <IconSymbol ios_icon_name="sparkles" android_material_icon_name="auto_awesome" color={colors.accent} size={24} />
+              <Text style={styles.infoTitle}>Real-Time Chat Solutions</Text>
+            </View>
+            
+            <Text style={styles.solutionTitle}>🚀 Recommended: Supabase Realtime</Text>
+            <Text style={styles.solutionText}>
+              Since Supabase is already integrated, this is the best option:
+            </Text>
+            <Text style={styles.bulletPoint}>• Use Supabase Auth for user authentication</Text>
+            <Text style={styles.bulletPoint}>• Create database tables for users & messages</Text>
+            <Text style={styles.bulletPoint}>• Use broadcast channels for real-time messaging</Text>
+            <Text style={styles.bulletPoint}>• Implement Row Level Security (RLS) policies</Text>
+            <Text style={styles.bulletPoint}>• Automatic reconnection & error handling</Text>
+
+            <View style={styles.divider} />
+
+            <Text style={styles.solutionTitle}>🔥 Alternative Solutions:</Text>
+            
+            <Text style={styles.alternativeItem}>
+              <Text style={styles.alternativeName}>1. Firebase Realtime Database</Text>
+              {'\n'}Popular, easy to use, great documentation
+            </Text>
+            
+            <Text style={styles.alternativeItem}>
+              <Text style={styles.alternativeName}>2. Socket.io</Text>
+              {'\n'}WebSocket-based, requires custom backend server
+            </Text>
+            
+            <Text style={styles.alternativeItem}>
+              <Text style={styles.alternativeName}>3. Stream Chat SDK</Text>
+              {'\n'}Feature-rich, built-in UI components, paid service
+            </Text>
+            
+            <Text style={styles.alternativeItem}>
+              <Text style={styles.alternativeName}>4. PubNub</Text>
+              {'\n'}Real-time messaging platform, scalable, paid service
+            </Text>
+            
+            <Text style={styles.alternativeItem}>
+              <Text style={styles.alternativeName}>5. AWS AppSync</Text>
+              {'\n'}GraphQL-based, integrates with AWS services
+            </Text>
+
+            <View style={styles.divider} />
+
+            <Text style={styles.implementationNote}>
+              💡 To implement real-time chat, you&apos;ll need to set up authentication, create database schemas, and handle real-time subscriptions. Each solution has its own setup process and pricing model.
+            </Text>
+          </View>
+
           {showAddFriend ? (
             <View style={styles.addFriendCard}>
               <Text style={styles.sectionTitle}>{t.addFriend}</Text>
@@ -286,17 +339,16 @@ export default function ChatScreen() {
               style={styles.addFriendButton} 
               onPress={() => setShowAddFriend(true)}
             >
-              <IconSymbol name="person.badge.plus" color={colors.card} size={24} />
+              <IconSymbol ios_icon_name="person.badge.plus" android_material_icon_name="person_add" color={colors.card} size={24} />
               <Text style={styles.addFriendButtonText}>{t.addFriend}</Text>
             </Pressable>
           )}
 
-          {/* Friends List */}
           <View style={styles.friendsSection}>
             <Text style={styles.sectionTitle}>{t.friends}</Text>
             {friends.length === 0 ? (
               <View style={styles.emptyState}>
-                <IconSymbol name="person.2" color={colors.textSecondary} size={48} />
+                <IconSymbol ios_icon_name="person.2" android_material_icon_name="people" color={colors.textSecondary} size={48} />
                 <Text style={styles.emptyStateText}>{t.noFriendsYet}</Text>
                 <Text style={styles.emptyStateSubtext}>{t.addFriendToStart}</Text>
               </View>
@@ -309,13 +361,13 @@ export default function ChatScreen() {
                   onLongPress={() => handleDeleteFriend(friend)}
                 >
                   <View style={styles.friendIcon}>
-                    <IconSymbol name="person.fill" color={colors.primary} size={24} />
+                    <IconSymbol ios_icon_name="person.fill" android_material_icon_name="person" color={colors.primary} size={24} />
                   </View>
                   <View style={styles.friendInfo}>
                     <Text style={styles.friendName}>{friend.name}</Text>
                     <Text style={styles.friendCode}>{t.code}: {friend.code}</Text>
                   </View>
-                  <IconSymbol name="chevron.right" color={colors.textSecondary} size={20} />
+                  <IconSymbol ios_icon_name="chevron.right" android_material_icon_name="chevron_right" color={colors.textSecondary} size={20} />
                 </Pressable>
               ))
             )}
@@ -325,7 +377,6 @@ export default function ChatScreen() {
     );
   }
 
-  // Chat View
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <KeyboardAvoidingView 
@@ -333,10 +384,9 @@ export default function ChatScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
-        {/* Chat Header */}
         <View style={styles.chatHeader}>
           <Pressable onPress={() => setSelectedFriend(null)} style={styles.backButton}>
-            <IconSymbol name="chevron.left" color={colors.primary} size={24} />
+            <IconSymbol ios_icon_name="chevron.left" android_material_icon_name="chevron_left" color={colors.primary} size={24} />
           </Pressable>
           <View style={styles.chatHeaderInfo}>
             <Text style={styles.chatHeaderName}>{selectedFriend.name}</Text>
@@ -344,7 +394,6 @@ export default function ChatScreen() {
           </View>
         </View>
 
-        {/* Messages */}
         <ScrollView 
           ref={scrollViewRef}
           style={styles.messagesContainer}
@@ -353,7 +402,7 @@ export default function ChatScreen() {
         >
           {messages.length === 0 ? (
             <View style={styles.emptyChat}>
-              <IconSymbol name="message" color={colors.textSecondary} size={48} />
+              <IconSymbol ios_icon_name="message" android_material_icon_name="message" color={colors.textSecondary} size={48} />
               <Text style={styles.emptyChatText}>{t.noMessagesYet}</Text>
               <Text style={styles.emptyChatSubtext}>{t.startConversation}</Text>
             </View>
@@ -386,7 +435,6 @@ export default function ChatScreen() {
           )}
         </ScrollView>
 
-        {/* Input */}
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.messageInput}
@@ -403,8 +451,9 @@ export default function ChatScreen() {
             disabled={!messageText.trim()}
           >
             <IconSymbol 
-              name="arrow.up.circle.fill" 
-              color={messageText.trim() ? colors.card : colors.textSecondary} 
+              ios_icon_name="arrow.up.circle.fill" 
+              android_material_icon_name="send"
+              color={messageText.trim() ? colors.primary : colors.textSecondary} 
               size={36} 
             />
           </Pressable>
@@ -474,20 +523,89 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     lineHeight: 20,
   },
-  noticeCard: {
-    backgroundColor: colors.highlight,
-    borderRadius: 12,
-    padding: 16,
+  warningCard: {
+    backgroundColor: '#FFF3E0',
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 20,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF9800',
   },
-  noticeText: {
+  warningHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  warningTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#E65100',
+    marginLeft: 8,
+  },
+  warningText: {
+    fontSize: 14,
+    color: '#E65100',
+    lineHeight: 22,
+  },
+  infoCard: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)',
+    elevation: 3,
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginLeft: 8,
+  },
+  solutionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  solutionText: {
     fontSize: 14,
     color: colors.text,
-    marginLeft: 12,
-    flex: 1,
+    lineHeight: 22,
+    marginBottom: 8,
+  },
+  bulletPoint: {
+    fontSize: 13,
+    color: colors.text,
     lineHeight: 20,
+    marginLeft: 8,
+    marginBottom: 4,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.highlight,
+    marginVertical: 16,
+  },
+  alternativeItem: {
+    fontSize: 13,
+    color: colors.text,
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  alternativeName: {
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  implementationNote: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    lineHeight: 20,
+    fontStyle: 'italic',
   },
   addFriendButton: {
     backgroundColor: colors.primary,

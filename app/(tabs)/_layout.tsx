@@ -27,12 +27,6 @@ export default function TabLayout() {
       color: colors.text,
     },
     {
-      route: '/calendar',
-      label: 'Calendar',
-      icon: 'calendar',
-      color: colors.text,
-    },
-    {
       route: '/profile',
       label: 'About',
       icon: 'info.circle.fill',
@@ -68,14 +62,6 @@ export default function TabLayout() {
           }}
         />
         <NativeTabs.Screen
-          name="calendar"
-          options={{
-            title: 'Calendar',
-            tabBarIcon: ({ color }) => <Icon name="calendar" color={color} />,
-            tabBarLabel: ({ color }) => <Label color={color}>Calendar</Label>,
-          }}
-        />
-        <NativeTabs.Screen
           name="profile"
           options={{
             title: 'About',
@@ -93,7 +79,6 @@ export default function TabLayout() {
         <Stack.Screen name="(home)" />
         <Stack.Screen name="chat" />
         <Stack.Screen name="games" />
-        <Stack.Screen name="calendar" />
         <Stack.Screen name="profile" />
       </Stack>
       <FloatingTabBar tabs={tabs} />
