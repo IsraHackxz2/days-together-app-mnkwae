@@ -15,6 +15,12 @@ export default function TabLayout() {
       color: colors.text,
     },
     {
+      route: '/chat',
+      label: 'Chat',
+      icon: 'message.fill',
+      color: colors.text,
+    },
+    {
       route: '/games',
       label: 'Games',
       icon: 'gamecontroller.fill',
@@ -43,6 +49,14 @@ export default function TabLayout() {
             title: 'Home',
             tabBarIcon: ({ color }) => <Icon name="heart.fill" color={color} />,
             tabBarLabel: ({ color }) => <Label color={color}>Home</Label>,
+          }}
+        />
+        <NativeTabs.Screen
+          name="chat"
+          options={{
+            title: 'Chat',
+            tabBarIcon: ({ color }) => <Icon name="message.fill" color={color} />,
+            tabBarLabel: ({ color }) => <Label color={color}>Chat</Label>,
           }}
         />
         <NativeTabs.Screen
@@ -77,6 +91,7 @@ export default function TabLayout() {
     <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(home)" />
+        <Stack.Screen name="chat" />
         <Stack.Screen name="games" />
         <Stack.Screen name="calendar" />
         <Stack.Screen name="profile" />

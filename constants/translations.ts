@@ -3,6 +3,7 @@ export type Language = 'en' | 'es';
 
 export interface Translations {
   // Home Screen
+  daysTogether: string;
   daysTogetherTitle: string;
   days: string;
   hours: string;
@@ -11,10 +12,12 @@ export interface Translations {
   firstName: string;
   secondName: string;
   relationshipStartDate: string;
+  relationshipStartTime: string;
   enterFirstName: string;
   enterSecondName: string;
   upcomingMilestones: string;
   daysLabel: string;
+  daysCount: string;
   completed: string;
   daysToGo: string;
   reset: string;
@@ -62,10 +65,37 @@ export interface Translations {
   proTip: string;
   proTipText: string;
   startGame: string;
+  gameMessage: string;
   gameAlertText: string;
+  
+  // Chat Screen
+  chat: string;
+  chatWithYourLoved: string;
+  yourCode: string;
+  shareThisCode: string;
+  chatNotice: string;
+  addFriend: string;
+  enterFriendCode: string;
+  enterFriendName: string;
+  friends: string;
+  noFriendsYet: string;
+  addFriendToStart: string;
+  code: string;
+  error: string;
+  cannotAddYourself: string;
+  friendAlreadyAdded: string;
+  success: string;
+  friendAdded: string;
+  add: string;
+  deleteFriend: string;
+  deleteFriendConfirm: string;
+  noMessagesYet: string;
+  startConversation: string;
+  typeMessage: string;
   
   // Profile Screen
   about: string;
+  appTitle: string;
   daysTogetherApp: string;
   appDescription: string;
   features: string;
@@ -95,6 +125,7 @@ export interface Translations {
 export const translations: Record<Language, Translations> = {
   en: {
     // Home Screen
+    daysTogether: 'Days Together',
     daysTogetherTitle: 'Days Together',
     days: 'Days',
     hours: 'Hours',
@@ -103,10 +134,12 @@ export const translations: Record<Language, Translations> = {
     firstName: 'First Name',
     secondName: 'Second Name',
     relationshipStartDate: 'Relationship Start Date',
+    relationshipStartTime: 'Relationship Start Time',
     enterFirstName: 'Enter first name',
     enterSecondName: 'Enter second name',
     upcomingMilestones: 'Upcoming Milestones',
     daysLabel: 'Days',
+    daysCount: 'days',
     completed: 'Completed! 🎉',
     daysToGo: 'days to go',
     reset: 'Reset',
@@ -154,10 +187,37 @@ export const translations: Record<Language, Translations> = {
     proTip: 'Pro Tip',
     proTipText: 'These games are designed to help you connect, laugh, and create beautiful memories together. Take turns choosing games and enjoy quality time with your loved one! 💑',
     startGame: 'Start Game',
+    gameMessage: 'This is a fun game to play together! Get creative and enjoy your time together! 💕',
     gameAlertText: 'This is a fun game to play together! Get creative and enjoy your time together! 💕',
+    
+    // Chat Screen
+    chat: 'Chat',
+    chatWithYourLoved: 'Chat with your loved one',
+    yourCode: 'Your Code',
+    shareThisCode: 'Share this code with your partner so they can add you as a friend',
+    chatNotice: 'Note: This is a local chat feature. Messages are stored on your device only. For real-time online chat, Supabase integration is required.',
+    addFriend: 'Add Friend',
+    enterFriendCode: 'Enter friend code',
+    enterFriendName: 'Enter friend name',
+    friends: 'Friends',
+    noFriendsYet: 'No friends yet',
+    addFriendToStart: 'Add a friend to start chatting',
+    code: 'Code',
+    error: 'Error',
+    cannotAddYourself: 'You cannot add yourself as a friend',
+    friendAlreadyAdded: 'This friend has already been added',
+    success: 'Success',
+    friendAdded: 'Friend added successfully!',
+    add: 'Add',
+    deleteFriend: 'Delete Friend',
+    deleteFriendConfirm: 'Are you sure you want to delete this friend?',
+    noMessagesYet: 'No messages yet',
+    startConversation: 'Start a conversation!',
+    typeMessage: 'Type a message...',
     
     // Profile Screen
     about: 'About',
+    appTitle: 'Days Together',
     daysTogetherApp: 'Days Together',
     appDescription: 'A beautiful app to track the days you\'ve been together with your loved one.',
     features: 'Features',
@@ -185,6 +245,7 @@ export const translations: Record<Language, Translations> = {
   },
   es: {
     // Home Screen
+    daysTogether: 'Días Juntos',
     daysTogetherTitle: 'Días Juntos',
     days: 'Días',
     hours: 'Horas',
@@ -193,10 +254,12 @@ export const translations: Record<Language, Translations> = {
     firstName: 'Primer Nombre',
     secondName: 'Segundo Nombre',
     relationshipStartDate: 'Fecha de Inicio de la Relación',
+    relationshipStartTime: 'Hora de Inicio de la Relación',
     enterFirstName: 'Ingresa el primer nombre',
     enterSecondName: 'Ingresa el segundo nombre',
     upcomingMilestones: 'Próximos Hitos',
     daysLabel: 'Días',
+    daysCount: 'días',
     completed: '¡Completado! 🎉',
     daysToGo: 'días para llegar',
     reset: 'Reiniciar',
@@ -244,10 +307,37 @@ export const translations: Record<Language, Translations> = {
     proTip: 'Consejo',
     proTipText: 'Estos juegos están diseñados para ayudarles a conectar, reír y crear hermosos recuerdos juntos. ¡Túrnense para elegir juegos y disfruten tiempo de calidad con su ser amado! 💑',
     startGame: 'Iniciar Juego',
+    gameMessage: '¡Este es un juego divertido para jugar juntos! ¡Sean creativos y disfruten su tiempo juntos! 💕',
     gameAlertText: '¡Este es un juego divertido para jugar juntos! ¡Sean creativos y disfruten su tiempo juntos! 💕',
+    
+    // Chat Screen
+    chat: 'Chat',
+    chatWithYourLoved: 'Chatea con tu ser amado',
+    yourCode: 'Tu Código',
+    shareThisCode: 'Comparte este código con tu pareja para que puedan agregarte como amigo',
+    chatNotice: 'Nota: Esta es una función de chat local. Los mensajes se almacenan solo en tu dispositivo. Para chat en línea en tiempo real, se requiere integración con Supabase.',
+    addFriend: 'Agregar Amigo',
+    enterFriendCode: 'Ingresa el código del amigo',
+    enterFriendName: 'Ingresa el nombre del amigo',
+    friends: 'Amigos',
+    noFriendsYet: 'Aún no hay amigos',
+    addFriendToStart: 'Agrega un amigo para comenzar a chatear',
+    code: 'Código',
+    error: 'Error',
+    cannotAddYourself: 'No puedes agregarte a ti mismo como amigo',
+    friendAlreadyAdded: 'Este amigo ya ha sido agregado',
+    success: 'Éxito',
+    friendAdded: '¡Amigo agregado exitosamente!',
+    add: 'Agregar',
+    deleteFriend: 'Eliminar Amigo',
+    deleteFriendConfirm: '¿Estás seguro de que quieres eliminar este amigo?',
+    noMessagesYet: 'Aún no hay mensajes',
+    startConversation: '¡Inicia una conversación!',
+    typeMessage: 'Escribe un mensaje...',
     
     // Profile Screen
     about: 'Acerca de',
+    appTitle: 'Días Juntos',
     daysTogetherApp: 'Días Juntos',
     appDescription: 'Una hermosa aplicación para rastrear los días que han estado juntos con tu ser amado.',
     features: 'Características',

@@ -29,6 +29,7 @@ export default function HomeScreen() {
   const [startDate, setStartDate] = useState(new Date());
   const [timeElapsed, setTimeElapsed] = useState<TimeRemaining>({ days: 0, hours: 0 });
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   // Load saved data on mount
   useEffect(() => {
@@ -93,7 +94,23 @@ export default function HomeScreen() {
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
-      setStartDate(selectedDate);
+      // Preserve the time when changing date
+      const newDate = new Date(startDate);
+      newDate.setFullYear(selectedDate.getFullYear());
+      newDate.setMonth(selectedDate.getMonth());
+      newDate.setDate(selectedDate.getDate());
+      setStartDate(newDate);
+    }
+  };
+
+  const onTimeChange = (event: any, selectedTime?: Date) => {
+    setShowTimePicker(Platform.OS === 'ios');
+    if (selectedTime) {
+      // Preserve the date when changing time
+      const newDate = new Date(startDate);
+      newDate.setHours(selectedTime.getHours());
+      newDate.setMinutes(selectedTime.getMinutes());
+      setStartDate(newDate);
     }
   };
 
@@ -103,6 +120,18 @@ export default function HomeScreen() {
       month: 'long', 
       day: 'numeric' 
     });
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const formatDateTime = (date: Date) => {
+    return `${formatDate(date)} at ${formatTime(date)}`;
   };
 
   const renderHeaderRight = () => (
@@ -164,7 +193,7 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <Text style={styles.dateSubtext}>{t.since} {formatDate(startDate)}</Text>
+          <Text style={styles.dateSubtext}>{t.since} {formatDateTime(startDate)}</Text>
           <Text style={styles.timezoneText}>{t.updatedInCST}</Text>
         </View>
 
@@ -203,6 +232,17 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
+          <View style={styles.inputCard}>
+            <Text style={styles.inputLabel}>{t.relationshipStartTime}</Text>
+            <Pressable 
+              style={styles.dateButton}
+              onPress={() => setShowTimePicker(true)}
+            >
+              <IconSymbol name="clock" color={colors.primary} size={20} />
+              <Text style={styles.dateButtonText}>{formatTime(startDate)}</Text>
+            </Pressable>
+          </View>
+
           {showDatePicker && (
             <DateTimePicker
               value={startDate}
@@ -210,6 +250,15 @@ export default function HomeScreen() {
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={onDateChange}
               maximumDate={new Date()}
+            />
+          )}
+
+          {showTimePicker && (
+            <DateTimePicker
+              value={startDate}
+              mode="time"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={onTimeChange}
             />
           )}
         </View>
@@ -334,6 +383,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     marginBottom: 4,
+    textAlign: 'center',
   },
   timezoneText: {
     fontSize: 12,
