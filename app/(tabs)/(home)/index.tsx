@@ -15,19 +15,19 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TimeRemaining {
   days: number;
   hours: number;
-  minutes: number;
-  seconds: number;
 }
 
 export default function HomeScreen() {
+  const { t } = useLanguage();
   const [name1, setName1] = useState("");
   const [name2, setName2] = useState("");
   const [startDate, setStartDate] = useState(new Date());
-  const [timeElapsed, setTimeElapsed] = useState<TimeRemaining>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeElapsed, setTimeElapsed] = useState<TimeRemaining>({ days: 0, hours: 0 });
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Load saved data on mount
@@ -35,12 +35,12 @@ export default function HomeScreen() {
     loadData();
   }, []);
 
-  // Update time every second
+  // Update time every minute
   useEffect(() => {
     calculateTime();
     const interval = setInterval(() => {
       calculateTime();
-    }, 1000);
+    }, 60000); // Update every minute
 
     return () => clearInterval(interval);
   }, [startDate]);
@@ -86,10 +86,8 @@ export default function HomeScreen() {
     
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
     
-    setTimeElapsed({ days, hours, minutes, seconds });
+    setTimeElapsed({ days, hours });
   };
 
   const onDateChange = (event: any, selectedDate?: Date) => {
@@ -113,7 +111,7 @@ export default function HomeScreen() {
         setName1("");
         setName2("");
         setStartDate(new Date());
-        Alert.alert("Reset", "All data has been cleared!");
+        Alert.alert(t.reset, t.allDataCleared);
       }}
       style={styles.headerButtonContainer}
     >
@@ -125,7 +123,7 @@ export default function HomeScreen() {
     <>
       <Stack.Screen
         options={{
-          title: "Days Together",
+          title: t.daysTogether,
           headerStyle: {
             backgroundColor: colors.background,
           },
@@ -139,7 +137,7 @@ export default function HomeScreen() {
       >
         {/* Header Section */}
         <View style={styles.headerSection}>
-          <Text style={styles.headerTitle}>Days Together</Text>
+          <Text style={styles.headerTitle}>{t.daysTogether}</Text>
           <View style={styles.namesContainer}>
             <Text style={styles.namesText}>
               {name1 || "Partner 1"} {name1 && name2 && "💕"} {name2 || "Partner 2"}
@@ -153,43 +151,30 @@ export default function HomeScreen() {
             <Text style={styles.heartIcon}>❤️</Text>
           </View>
           
-          {/* Days */}
+          {/* Days and Hours */}
           <View style={styles.timeRow}>
             <View style={styles.timeBlock}>
               <Text style={styles.timeNumber}>{timeElapsed.days}</Text>
-              <Text style={styles.timeLabel}>Days</Text>
+              <Text style={styles.timeLabel}>{t.days}</Text>
+            </View>
+            <Text style={styles.timeSeparator}>:</Text>
+            <View style={styles.timeBlock}>
+              <Text style={styles.timeNumber}>{timeElapsed.hours}</Text>
+              <Text style={styles.timeLabel}>{t.hours}</Text>
             </View>
           </View>
 
-          {/* Hours, Minutes, Seconds */}
-          <View style={styles.timeRowSmall}>
-            <View style={styles.timeBlockSmall}>
-              <Text style={styles.timeNumberSmall}>{timeElapsed.hours}</Text>
-              <Text style={styles.timeLabelSmall}>Hours</Text>
-            </View>
-            <Text style={styles.timeSeparator}>:</Text>
-            <View style={styles.timeBlockSmall}>
-              <Text style={styles.timeNumberSmall}>{timeElapsed.minutes}</Text>
-              <Text style={styles.timeLabelSmall}>Minutes</Text>
-            </View>
-            <Text style={styles.timeSeparator}>:</Text>
-            <View style={styles.timeBlockSmall}>
-              <Text style={styles.timeNumberSmall}>{timeElapsed.seconds}</Text>
-              <Text style={styles.timeLabelSmall}>Seconds</Text>
-            </View>
-          </View>
-
-          <Text style={styles.dateSubtext}>Since {formatDate(startDate)}</Text>
-          <Text style={styles.timezoneText}>Updated in CST timezone</Text>
+          <Text style={styles.dateSubtext}>{t.since} {formatDate(startDate)}</Text>
+          <Text style={styles.timezoneText}>{t.updatedInCST}</Text>
         </View>
 
         {/* Input Section */}
         <View style={styles.inputSection}>
           <View style={styles.inputCard}>
-            <Text style={styles.inputLabel}>First Name</Text>
+            <Text style={styles.inputLabel}>{t.firstName}</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter first name"
+              placeholder={t.enterFirstName}
               placeholderTextColor={colors.textSecondary}
               value={name1}
               onChangeText={setName1}
@@ -197,10 +182,10 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.inputCard}>
-            <Text style={styles.inputLabel}>Second Name</Text>
+            <Text style={styles.inputLabel}>{t.secondName}</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter second name"
+              placeholder={t.enterSecondName}
               placeholderTextColor={colors.textSecondary}
               value={name2}
               onChangeText={setName2}
@@ -208,7 +193,7 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.inputCard}>
-            <Text style={styles.inputLabel}>Relationship Start Date</Text>
+            <Text style={styles.inputLabel}>{t.relationshipStartDate}</Text>
             <Pressable 
               style={styles.dateButton}
               onPress={() => setShowDatePicker(true)}
@@ -231,7 +216,7 @@ export default function HomeScreen() {
 
         {/* Milestones Section */}
         <View style={styles.milestonesSection}>
-          <Text style={styles.milestonesTitle}>Upcoming Milestones</Text>
+          <Text style={styles.milestonesTitle}>{t.upcomingMilestones}</Text>
           {renderMilestone(100, timeElapsed.days)}
           {renderMilestone(365, timeElapsed.days)}
           {renderMilestone(500, timeElapsed.days)}
@@ -249,8 +234,8 @@ export default function HomeScreen() {
             <IconSymbol name="checkmark.circle.fill" color={colors.card} size={24} />
           </View>
           <View style={styles.milestoneContent}>
-            <Text style={styles.milestoneText}>{milestone} Days</Text>
-            <Text style={styles.milestoneSubtext}>Completed! 🎉</Text>
+            <Text style={styles.milestoneText}>{milestone} {t.daysCount}</Text>
+            <Text style={styles.milestoneSubtext}>{t.completed}</Text>
           </View>
         </View>
       );
@@ -263,8 +248,8 @@ export default function HomeScreen() {
           <IconSymbol name="heart.fill" color={colors.primary} size={24} />
         </View>
         <View style={styles.milestoneContent}>
-          <Text style={styles.milestoneText}>{milestone} Days</Text>
-          <Text style={styles.milestoneSubtext}>{daysRemaining} days to go</Text>
+          <Text style={styles.milestoneText}>{milestone} {t.daysCount}</Text>
+          <Text style={styles.milestoneSubtext}>{daysRemaining} {t.daysToGo}</Text>
         </View>
       </View>
     );
@@ -326,9 +311,10 @@ const styles = StyleSheet.create({
   },
   timeBlock: {
     alignItems: 'center',
+    minWidth: 100,
   },
   timeNumber: {
-    fontSize: 64,
+    fontSize: 56,
     fontWeight: 'bold',
     color: colors.primary,
   },
@@ -338,31 +324,11 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginTop: 4,
   },
-  timeRowSmall: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  timeBlockSmall: {
-    alignItems: 'center',
-    minWidth: 70,
-  },
-  timeNumberSmall: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.secondary,
-  },
-  timeLabelSmall: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
   timeSeparator: {
-    fontSize: 28,
+    fontSize: 56,
     fontWeight: 'bold',
     color: colors.secondary,
-    marginHorizontal: 8,
+    marginHorizontal: 16,
   },
   dateSubtext: {
     fontSize: 14,

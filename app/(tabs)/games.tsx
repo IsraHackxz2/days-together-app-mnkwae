@@ -1,42 +1,45 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Game {
   id: number;
-  title: string;
+  titleKey: keyof typeof import('@/constants/translations').translations.en;
+  descKey: keyof typeof import('@/constants/translations').translations.en;
   emoji: string;
-  description: string;
   color: string;
 }
 
 const games: Game[] = [
-  { id: 1, title: "Love Quiz", emoji: "❤️", description: "Test how well you know each other", color: colors.primary },
-  { id: 2, title: "Truth or Dare", emoji: "🎭", description: "Classic game for couples", color: colors.secondary },
-  { id: 3, title: "Would You Rather", emoji: "🤔", description: "Choose between two options", color: colors.accent },
-  { id: 4, title: "20 Questions", emoji: "❓", description: "Guess what your partner is thinking", color: "#FF6B6B" },
-  { id: 5, title: "Never Have I Ever", emoji: "🙈", description: "Learn new things about each other", color: "#4ECDC4" },
-  { id: 6, title: "Two Truths One Lie", emoji: "🎲", description: "Can you spot the lie?", color: "#95E1D3" },
-  { id: 7, title: "Story Builder", emoji: "📖", description: "Create a story together", color: "#F38181" },
-  { id: 8, title: "Memory Match", emoji: "🧠", description: "Test your memory skills", color: "#AA96DA" },
-  { id: 9, title: "Emoji Charades", emoji: "🎬", description: "Act out using only emojis", color: "#FCBAD3" },
-  { id: 10, title: "Love Trivia", emoji: "💝", description: "Answer questions about your relationship", color: "#A8D8EA" },
+  { id: 1, titleKey: 'loveQuiz', descKey: 'loveQuizDesc', emoji: "❤️", color: colors.primary },
+  { id: 2, titleKey: 'truthOrDare', descKey: 'truthOrDareDesc', emoji: "🎭", color: colors.secondary },
+  { id: 3, titleKey: 'wouldYouRather', descKey: 'wouldYouRatherDesc', emoji: "🤔", color: colors.accent },
+  { id: 4, titleKey: 'twentyQuestions', descKey: 'twentyQuestionsDesc', emoji: "❓", color: "#FF6B6B" },
+  { id: 5, titleKey: 'neverHaveIEver', descKey: 'neverHaveIEverDesc', emoji: "🙈", color: "#4ECDC4" },
+  { id: 6, titleKey: 'twoTruthsOneLie', descKey: 'twoTruthsOneLieDesc', emoji: "🎲", color: "#95E1D3" },
+  { id: 7, titleKey: 'storyBuilder', descKey: 'storyBuilderDesc', emoji: "📖", color: "#F38181" },
+  { id: 8, titleKey: 'memoryMatch', descKey: 'memoryMatchDesc', emoji: "🧠", color: "#AA96DA" },
+  { id: 9, titleKey: 'emojiCharades', descKey: 'emojiCharadesDesc', emoji: "🎬", color: "#FCBAD3" },
+  { id: 10, titleKey: 'loveTrivia', descKey: 'loveTriviaDesc', emoji: "💝", color: "#A8D8EA" },
 ];
 
 export default function GamesScreen() {
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const { t } = useLanguage();
 
   const handleGamePress = (game: Game) => {
-    setSelectedGame(game);
+    const title = t[game.titleKey];
+    const description = t[game.descKey];
+    
     Alert.alert(
-      game.title,
-      `${game.description}\n\nThis is a fun game to play together! Get creative and enjoy your time together! 💕`,
+      title,
+      `${description}\n\n${t.gameMessage}`,
       [
-        { text: "Start Game", onPress: () => console.log(`Starting ${game.title}`) },
-        { text: "Cancel", style: "cancel" }
+        { text: t.startGame, onPress: () => console.log(`Starting ${title}`) },
+        { text: t.cancel, style: "cancel" }
       ]
     );
   };
@@ -48,8 +51,8 @@ export default function GamesScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Couple Games</Text>
-          <Text style={styles.headerSubtitle}>Fun activities to enjoy together</Text>
+          <Text style={styles.headerTitle}>{t.coupleGames}</Text>
+          <Text style={styles.headerSubtitle}>{t.funActivities}</Text>
         </View>
 
         <View style={styles.gamesGrid}>
@@ -62,8 +65,8 @@ export default function GamesScreen() {
               <View style={styles.gameContent}>
                 <Text style={styles.gameEmoji}>{game.emoji}</Text>
                 <View style={styles.gameInfo}>
-                  <Text style={styles.gameTitle}>{game.title}</Text>
-                  <Text style={styles.gameDescription}>{game.description}</Text>
+                  <Text style={styles.gameTitle}>{t[game.titleKey]}</Text>
+                  <Text style={styles.gameDescription}>{t[game.descKey]}</Text>
                 </View>
               </View>
               <IconSymbol name="chevron.right" color={colors.textSecondary} size={20} />
@@ -74,11 +77,10 @@ export default function GamesScreen() {
         <View style={styles.tipCard}>
           <View style={styles.tipHeader}>
             <IconSymbol name="lightbulb.fill" color={colors.accent} size={24} />
-            <Text style={styles.tipTitle}>Pro Tip</Text>
+            <Text style={styles.tipTitle}>{t.proTip}</Text>
           </View>
           <Text style={styles.tipText}>
-            These games are designed to help you connect, laugh, and create beautiful memories together. 
-            Take turns choosing games and enjoy quality time with your loved one! 💑
+            {t.proTipText}
           </Text>
         </View>
       </ScrollView>

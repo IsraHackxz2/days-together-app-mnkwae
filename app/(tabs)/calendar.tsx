@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DayNote {
   date: string;
@@ -15,6 +16,7 @@ interface DayNote {
 const EMOJIS = ["❤️", "💕", "💖", "💗", "💝", "💘", "😍", "🥰", "😘", "💑", "👫", "🌹", "🎉", "🎂", "🎁", "⭐", "✨", "🌟", "💫", "🔥"];
 
 export default function CalendarScreen() {
+  const { t, language } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [notes, setNotes] = useState<{ [key: string]: DayNote }>({});
@@ -97,12 +99,12 @@ export default function CalendarScreen() {
     if (!selectedDate) return;
 
     Alert.alert(
-      "Delete Note",
-      "Are you sure you want to delete this note?",
+      t.deleteNote,
+      t.deleteNoteConfirm,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t.cancel, style: "cancel" },
         {
-          text: "Delete",
+          text: t.delete,
           style: "destructive",
           onPress: () => {
             const dateKey = formatDateKey(selectedDate);
@@ -125,10 +127,17 @@ export default function CalendarScreen() {
     setCurrentDate(newDate);
   };
 
+  const getWeekDays = () => {
+    if (language === 'es') {
+      return ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+    }
+    return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  };
+
   const renderCalendar = () => {
     const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
     const days = [];
-    const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const weekDays = getWeekDays();
 
     // Week day headers
     const headers = weekDays.map((day, index) => (
@@ -174,6 +183,20 @@ export default function CalendarScreen() {
     );
   };
 
+  const formatMonthYear = (date: Date) => {
+    if (language === 'es') {
+      return date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    }
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  };
+
+  const formatSelectedDate = (date: Date) => {
+    if (language === 'es') {
+      return date.toLocaleDateString('es-ES', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView 
@@ -181,8 +204,8 @@ export default function CalendarScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Our Calendar</Text>
-          <Text style={styles.headerSubtitle}>Mark special moments together</Text>
+          <Text style={styles.headerTitle}>{t.ourCalendar}</Text>
+          <Text style={styles.headerSubtitle}>{t.markSpecialMoments}</Text>
         </View>
 
         <View style={styles.monthSelector}>
@@ -190,7 +213,7 @@ export default function CalendarScreen() {
             <IconSymbol name="chevron.left" color={colors.primary} size={24} />
           </Pressable>
           <Text style={styles.monthText}>
-            {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            {formatMonthYear(currentDate)}
           </Text>
           <Pressable onPress={() => changeMonth(1)} style={styles.monthButton}>
             <IconSymbol name="chevron.right" color={colors.primary} size={24} />
@@ -200,10 +223,10 @@ export default function CalendarScreen() {
         {renderCalendar()}
 
         <View style={styles.legendCard}>
-          <Text style={styles.legendTitle}>How to use:</Text>
-          <Text style={styles.legendText}>• Tap any day to add a note or emoji</Text>
-          <Text style={styles.legendText}>• Days with emojis have saved notes</Text>
-          <Text style={styles.legendText}>• Today&apos;s date is highlighted</Text>
+          <Text style={styles.legendTitle}>{t.howToUse}</Text>
+          <Text style={styles.legendText}>{t.tapAnyDay}</Text>
+          <Text style={styles.legendText}>{t.daysWithEmojis}</Text>
+          <Text style={styles.legendText}>{t.todayHighlighted}</Text>
         </View>
       </ScrollView>
 
@@ -217,14 +240,14 @@ export default function CalendarScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>
-                {selectedDate?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                {selectedDate && formatSelectedDate(selectedDate)}
               </Text>
               <Pressable onPress={() => setModalVisible(false)}>
                 <IconSymbol name="xmark.circle.fill" color={colors.textSecondary} size={28} />
               </Pressable>
             </View>
 
-            <Text style={styles.sectionLabel}>Choose an Emoji</Text>
+            <Text style={styles.sectionLabel}>{t.chooseEmoji}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.emojiScroll}>
               {EMOJIS.map((emoji, index) => (
                 <Pressable
@@ -240,10 +263,10 @@ export default function CalendarScreen() {
               ))}
             </ScrollView>
 
-            <Text style={styles.sectionLabel}>Add a Note</Text>
+            <Text style={styles.sectionLabel}>{t.addNote}</Text>
             <TextInput
               style={styles.noteInput}
-              placeholder="Write something special..."
+              placeholder={t.writeSomethingSpecial}
               placeholderTextColor={colors.textSecondary}
               value={noteText}
               onChangeText={setNoteText}
@@ -253,11 +276,11 @@ export default function CalendarScreen() {
 
             <View style={styles.modalButtons}>
               <Pressable style={styles.saveButton} onPress={handleSaveNote}>
-                <Text style={styles.saveButtonText}>Save</Text>
+                <Text style={styles.saveButtonText}>{t.save}</Text>
               </Pressable>
               {notes[formatDateKey(selectedDate!)] && (
                 <Pressable style={styles.deleteButton} onPress={handleDeleteNote}>
-                  <Text style={styles.deleteButtonText}>Delete</Text>
+                  <Text style={styles.deleteButtonText}>{t.delete}</Text>
                 </Pressable>
               )}
             </View>
