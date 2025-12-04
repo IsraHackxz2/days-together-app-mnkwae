@@ -1,6 +1,6 @@
 
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
@@ -18,7 +18,11 @@ export default function ProfileScreen() {
 
         <View style={styles.card}>
           <View style={styles.iconContainer}>
-            <Text style={styles.emoji}>💑</Text>
+            <Image 
+              source={require('@/assets/images/8be3dd88-2c62-4a8a-8b0c-3b497b23fb20.jpeg')}
+              style={styles.coupleImage}
+              resizeMode="cover"
+            />
           </View>
           <Text style={styles.cardTitle}>Days Together</Text>
           <Text style={styles.cardDescription}>
@@ -36,7 +40,7 @@ export default function ProfileScreen() {
             <View style={styles.featureContent}>
               <Text style={styles.featureTitle}>Track Your Love</Text>
               <Text style={styles.featureDescription}>
-                Count every precious day you&apos;ve been together
+                Count every precious day, hour, and minute together
               </Text>
             </View>
           </View>
@@ -46,9 +50,21 @@ export default function ProfileScreen() {
               <IconSymbol name="calendar" color={colors.secondary} size={24} />
             </View>
             <View style={styles.featureContent}>
-              <Text style={styles.featureTitle}>Set Your Date</Text>
+              <Text style={styles.featureTitle}>Calendar & Notes</Text>
               <Text style={styles.featureDescription}>
-                Choose the special day your relationship began
+                Mark special moments with notes and emojis
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.featureItem}>
+            <View style={styles.featureIcon}>
+              <IconSymbol name="gamecontroller.fill" color={colors.accent} size={24} />
+            </View>
+            <View style={styles.featureContent}>
+              <Text style={styles.featureTitle}>Couple Games</Text>
+              <Text style={styles.featureDescription}>
+                Fun activities to enjoy together
               </Text>
             </View>
           </View>
@@ -76,11 +92,23 @@ export default function ProfileScreen() {
               </Text>
             </View>
           </View>
+
+          <View style={styles.featureItem}>
+            <View style={styles.featureIcon}>
+              <IconSymbol name="clock.fill" color={colors.secondary} size={24} />
+            </View>
+            <View style={styles.featureContent}>
+              <Text style={styles.featureTitle}>CST Timezone</Text>
+              <Text style={styles.featureDescription}>
+                Accurate time tracking in Central Standard Time
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Made it by Isra for Natasha</Text>
-          <Text style={styles.versionText}>Version 1.0.0</Text>
+          <Text style={styles.versionText}>Version 2.0.0</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -120,9 +148,15 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+    elevation: 5,
   },
-  emoji: {
-    fontSize: 64,
+  coupleImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 16,
   },
   cardTitle: {
     fontSize: 24,

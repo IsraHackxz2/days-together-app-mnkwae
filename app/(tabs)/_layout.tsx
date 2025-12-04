@@ -15,9 +15,21 @@ export default function TabLayout() {
       color: colors.text,
     },
     {
+      route: '/games',
+      label: 'Games',
+      icon: 'gamecontroller.fill',
+      color: colors.text,
+    },
+    {
+      route: '/calendar',
+      label: 'Calendar',
+      icon: 'calendar',
+      color: colors.text,
+    },
+    {
       route: '/profile',
-      label: 'Profile',
-      icon: 'person.fill',
+      label: 'About',
+      icon: 'info.circle.fill',
       color: colors.text,
     },
   ];
@@ -34,11 +46,27 @@ export default function TabLayout() {
           }}
         />
         <NativeTabs.Screen
+          name="games"
+          options={{
+            title: 'Games',
+            tabBarIcon: ({ color }) => <Icon name="gamecontroller.fill" color={color} />,
+            tabBarLabel: ({ color }) => <Label color={color}>Games</Label>,
+          }}
+        />
+        <NativeTabs.Screen
+          name="calendar"
+          options={{
+            title: 'Calendar',
+            tabBarIcon: ({ color }) => <Icon name="calendar" color={color} />,
+            tabBarLabel: ({ color }) => <Label color={color}>Calendar</Label>,
+          }}
+        />
+        <NativeTabs.Screen
           name="profile"
           options={{
-            title: 'Profile',
-            tabBarIcon: ({ color }) => <Icon name="person.fill" color={color} />,
-            tabBarLabel: ({ color }) => <Label color={color}>Profile</Label>,
+            title: 'About',
+            tabBarIcon: ({ color }) => <Icon name="info.circle.fill" color={color} />,
+            tabBarLabel: ({ color }) => <Label color={color}>About</Label>,
           }}
         />
       </NativeTabs>
@@ -49,6 +77,8 @@ export default function TabLayout() {
     <>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(home)" />
+        <Stack.Screen name="games" />
+        <Stack.Screen name="calendar" />
         <Stack.Screen name="profile" />
       </Stack>
       <FloatingTabBar tabs={tabs} />

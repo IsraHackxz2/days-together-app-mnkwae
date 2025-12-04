@@ -16,11 +16,18 @@ import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+interface TimeRemaining {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 export default function HomeScreen() {
   const [name1, setName1] = useState("");
   const [name2, setName2] = useState("");
   const [startDate, setStartDate] = useState(new Date());
-  const [daysTogether, setDaysTogether] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState<TimeRemaining>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Load saved data on mount
@@ -28,9 +35,14 @@ export default function HomeScreen() {
     loadData();
   }, []);
 
-  // Calculate days whenever the date changes
+  // Update time every second
   useEffect(() => {
-    calculateDays();
+    calculateTime();
+    const interval = setInterval(() => {
+      calculateTime();
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [startDate]);
 
   // Save data whenever it changes
@@ -62,11 +74,22 @@ export default function HomeScreen() {
     }
   };
 
-  const calculateDays = () => {
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    setDaysTogether(diffDays);
+  const calculateTime = () => {
+    // Get current time in CST (UTC-6)
+    const now = new Date();
+    const cstOffset = -6 * 60; // CST is UTC-6
+    const localOffset = now.getTimezoneOffset();
+    const cstTime = new Date(now.getTime() + (localOffset + cstOffset) * 60000);
+    
+    // Calculate difference
+    const diffMs = cstTime.getTime() - startDate.getTime();
+    
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+    
+    setTimeElapsed({ days, hours, minutes, seconds });
   };
 
   const onDateChange = (event: any, selectedDate?: Date) => {
@@ -124,16 +147,40 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Days Counter Card */}
+        {/* Time Counter Card */}
         <View style={styles.counterCard}>
           <View style={styles.heartIconContainer}>
             <Text style={styles.heartIcon}>❤️</Text>
           </View>
-          <Text style={styles.daysNumber}>{daysTogether}</Text>
-          <Text style={styles.daysLabel}>
-            {daysTogether === 1 ? 'Day' : 'Days'} of Love
-          </Text>
+          
+          {/* Days */}
+          <View style={styles.timeRow}>
+            <View style={styles.timeBlock}>
+              <Text style={styles.timeNumber}>{timeElapsed.days}</Text>
+              <Text style={styles.timeLabel}>Days</Text>
+            </View>
+          </View>
+
+          {/* Hours, Minutes, Seconds */}
+          <View style={styles.timeRowSmall}>
+            <View style={styles.timeBlockSmall}>
+              <Text style={styles.timeNumberSmall}>{timeElapsed.hours}</Text>
+              <Text style={styles.timeLabelSmall}>Hours</Text>
+            </View>
+            <Text style={styles.timeSeparator}>:</Text>
+            <View style={styles.timeBlockSmall}>
+              <Text style={styles.timeNumberSmall}>{timeElapsed.minutes}</Text>
+              <Text style={styles.timeLabelSmall}>Minutes</Text>
+            </View>
+            <Text style={styles.timeSeparator}>:</Text>
+            <View style={styles.timeBlockSmall}>
+              <Text style={styles.timeNumberSmall}>{timeElapsed.seconds}</Text>
+              <Text style={styles.timeLabelSmall}>Seconds</Text>
+            </View>
+          </View>
+
           <Text style={styles.dateSubtext}>Since {formatDate(startDate)}</Text>
+          <Text style={styles.timezoneText}>Updated in CST timezone</Text>
         </View>
 
         {/* Input Section */}
@@ -185,10 +232,10 @@ export default function HomeScreen() {
         {/* Milestones Section */}
         <View style={styles.milestonesSection}>
           <Text style={styles.milestonesTitle}>Upcoming Milestones</Text>
-          {renderMilestone(100, daysTogether)}
-          {renderMilestone(365, daysTogether)}
-          {renderMilestone(500, daysTogether)}
-          {renderMilestone(1000, daysTogether)}
+          {renderMilestone(100, timeElapsed.days)}
+          {renderMilestone(365, timeElapsed.days)}
+          {renderMilestone(500, timeElapsed.days)}
+          {renderMilestone(1000, timeElapsed.days)}
         </View>
       </ScrollView>
     </>
@@ -197,7 +244,7 @@ export default function HomeScreen() {
   function renderMilestone(milestone: number, current: number) {
     if (current >= milestone) {
       return (
-        <View style={styles.milestoneCard}>
+        <View key={milestone} style={styles.milestoneCard}>
           <View style={styles.milestoneIconCompleted}>
             <IconSymbol name="checkmark.circle.fill" color={colors.card} size={24} />
           </View>
@@ -211,7 +258,7 @@ export default function HomeScreen() {
 
     const daysRemaining = milestone - current;
     return (
-      <View style={styles.milestoneCard}>
+      <View key={milestone} style={styles.milestoneCard}>
         <View style={styles.milestoneIcon}>
           <IconSymbol name="heart.fill" color={colors.primary} size={24} />
         </View>
@@ -272,21 +319,60 @@ const styles = StyleSheet.create({
   heartIcon: {
     fontSize: 48,
   },
-  daysNumber: {
-    fontSize: 72,
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  timeBlock: {
+    alignItems: 'center',
+  },
+  timeNumber: {
+    fontSize: 64,
     fontWeight: 'bold',
     color: colors.primary,
-    marginBottom: 8,
   },
-  daysLabel: {
-    fontSize: 24,
+  timeLabel: {
+    fontSize: 18,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 8,
+    marginTop: 4,
+  },
+  timeRowSmall: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  timeBlockSmall: {
+    alignItems: 'center',
+    minWidth: 70,
+  },
+  timeNumberSmall: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.secondary,
+  },
+  timeLabelSmall: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  timeSeparator: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: colors.secondary,
+    marginHorizontal: 8,
   },
   dateSubtext: {
     fontSize: 14,
     color: colors.textSecondary,
+    marginBottom: 4,
+  },
+  timezoneText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
   },
   inputSection: {
     marginBottom: 30,
